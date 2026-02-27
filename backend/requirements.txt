@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+psycopg2-binary
+joblib
+numpy
+pandas
+catboost
+requests
+bcrypt
+python-jose
