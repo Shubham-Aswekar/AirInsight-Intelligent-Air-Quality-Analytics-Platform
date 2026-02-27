@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useAppContext } from '../context/AppContext';
 import AQICard from '../components/AQICard';
 import PollutantCard from '../components/PollutantCard';
+import PollutionSourceCard from '../components/PollutionSourceCard';
+import HealthAdvisoryCard from '../components/HealthAdvisoryCard';
 import { fetchLatestAQI } from '../services/api';
 import { AlertTriangle, Clock, Activity } from 'lucide-react';
 
@@ -50,6 +52,11 @@ export default function Dashboard() {
                     <PollutantCard name="O3" value={currentData?.O3 || null} />
                     <PollutantCard name="NH3" value={currentData?.NH3 || null} />
                 </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <PollutionSourceCard data={currentData} />
+                <HealthAdvisoryCard aqi={currentData?.aqi} />
             </div>
 
             {!currentData && (

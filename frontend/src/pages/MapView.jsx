@@ -3,7 +3,8 @@ import { MapContainer, TileLayer, Marker, Popup, Circle, Tooltip } from 'react-l
 import 'leaflet/dist/leaflet.css';
 import { useAppContext } from '../context/AppContext';
 import { fetchPublicSensors, fetchLatestAQI } from '../services/api';
-import { Activity } from 'lucide-react';
+import { Activity, Radio } from 'lucide-react';
+import { getHealthAdvisory } from '../utils/health';
 
 function fixLeafletIcon() {
     const L = window.L || require('leaflet');
@@ -93,7 +94,7 @@ export default function MapView() {
                     <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png" />
 
                     {sensors.filter(s => s.latitude != null && s.longitude != null).map((sensor, i) => (
-                        <React.Fragment key={`sensor-${sensor.sensor_id}-${i}`}>
+                        <React.Fragment key={`sensor - ${sensor.sensor_id} -${i} `}>
                             {/* Physical radius <Circle> renders fixed map meters, so zooms authentically scale */}
                             <Circle
                                 center={[sensor.latitude, sensor.longitude]}
@@ -144,7 +145,19 @@ export default function MapView() {
                                                     <span className="text-slate-500 text-xs">Coverage Radius</span>
                                                     <span className="font-semibold text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">{sensor.radius} km</span>
                                                 </p>
-                                                <div className="text-[10px] text-slate-400 text-center mt-2 pt-2">{sensor.timestamp}</div>
+                                                <div className="text-[10px] text-slate-400 text-center mt-2 pt-2 border-t">{sensor.timestamp}</div>
+                                                {(() => {
+                                                    const advisory = getHealthAdvisory(sensor.aqi);
+                                                    if (!advisory) return null;
+                                                    return (
+                                                        <div className={`mt-3 p-3 rounded-lg border shadow-sm ${advisory.bg}`}>
+                                                            <div className={`text-base font-black mb-1 ${advisory.color}`}>Health Risk: {advisory.level}</div>
+                                                            <div className="text-sm leading-snug text-slate-900 font-bold opacity-90">
+                                                                Advice: {advisory.advice}
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })()}
                                             </div>
                                         ) : (
                                             <div className="flex flex-col items-center justify-center p-4 bg-slate-100 border border-slate-200 rounded-lg">

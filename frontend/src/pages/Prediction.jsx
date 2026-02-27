@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { predictAQI } from '../services/api';
 import AQICard from '../components/AQICard';
+import { getHealthAdvisory } from '../utils/health';
 import { Loader2, ShieldCheck, AlertCircle } from 'lucide-react';
 
 export default function Prediction() {
@@ -69,13 +70,18 @@ export default function Prediction() {
                 </div>
 
                 <div className="md:col-span-1 space-y-6">
-                    <AQICard aqi={result?.aqi_estimate} title="Predicted AQI" className="h-[300px]" />
-                    {result && (
-                        <div className="glass-card p-5 border-l-4 border-blue-500 bg-blue-50/50 dark:bg-blue-900/10">
-                            <h4 className="font-bold mb-2 flex items-center gap-2"><ShieldCheck className="text-blue-500" size={20} /> Health Advisory</h4>
-                            <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{result.decision_recommendation || 'Maintain standard precautions.'}</p>
-                        </div>
-                    )}
+                    <AQICard aqi={result?.predicted_AQI} title="Predicted AQI" className="h-[300px]" />
+                    {result && (() => {
+                        const advisory = getHealthAdvisory(result.predicted_AQI);
+                        return (
+                            <div className={`glass-card p-5 border-l-4 ${advisory?.border} ${advisory?.bg} dark:bg-slate-900/50`}>
+                                <h4 className={`text-lg font-black mb-2 flex items-center gap-2 ${advisory?.color}`}><ShieldCheck size={24} /> Health Risk: {advisory?.level}</h4>
+                                <p className="text-base font-bold text-slate-900 dark:text-white mt-1">
+                                    {advisory?.advice}
+                                </p>
+                            </div>
+                        );
+                    })()}
                 </div>
             </div>
         </div>
